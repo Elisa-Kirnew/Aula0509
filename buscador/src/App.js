@@ -1,37 +1,51 @@
 import { useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import './styles.css';
+import api from "./services/api";
 
 
 function App() {
 
   const [input, setInput] = useState('')
+  const [cep, setCep] = useState('')
 
 
     
-  function aoClicar() {
-    alert('O que tem dentro do input: ' + input)
+ async function aoClicar() {
+    if(input === ''){
+      alert("Amigão? Preencha com o CEP ai")
+      return
+    }try{
+      const response = await api.get(`${input}/json`)
+      setCep(response.data)
+      setInput("")
+        }catch{
+          alert("Amigão ? parece que não sabe cep ???? ")
+          setInput("")
+
+    }
   }
 
   return (
     <div className="container">
       <h1 className="title"> Buscador de Cep</h1>
       <div className="containerInput">
-        <input type="text" placeholder="Digite aqui..." value={input} onChange={(e) =>setInput(e.target.value)}/>
+        <input type="text" placeholder="Digite aqui..." value=
+        {input} onChange={(e) =>setInput(e.target.value)}/>
 
         <button className="buttonSearch" onClick={aoClicar}>
           <FiSearch size={25} color="#FFF"/>
         </button>
       </div>
 
-    <main className="main">
-      <h2> Cep :  19970000 </h2>
-      <span> Rua : Kathariene </span> 
-      <span> Bairro : Kathariene </span> 
-      <span> Estado : Kathariene </span> 
-    </main>
 
 
+      {Object.keys(cep).length > 0 &&(<main className="main">
+      <h2> Cep :  {cep.cep}</h2>
+      <span> Rua : {cep.logradouro} </span> 
+      <span> Bairro : {cep.bairro} </span> 
+      <span> Estado : {cep.uf}</span> 
+      </main>)}
 
     </div>
   );
